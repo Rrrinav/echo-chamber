@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs"
 
 import User from "../models/user.model.js"
 import { generateToken } from "../lib/utils.js"
-import { cloudinary } from "../lib/cloudinary.js";
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -116,4 +116,14 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({message: "Internal server error!"});
   }
 
+};
+
+
+export const checkAuth = async (req, res) => {
+  try {
+    res.status(200).json(req.user);
+  } catch (err) {
+    console.error("Error in checkAuth controller: ", err.message);
+    res.status(500).json({message: "Internal server error!"});
+  }
 };
