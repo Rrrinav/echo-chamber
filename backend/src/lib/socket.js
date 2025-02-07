@@ -15,6 +15,8 @@ const io = new Server(server, {
 // { userId: socketId }
 const userSockMap = {}; 
 
+export function getSocketId(userId) { return userSockMap[userId]; }
+
 io.on("connection", (socket) => {
   console.log("User connected: ", socket.id);
 

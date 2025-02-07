@@ -2,6 +2,9 @@ import express from "express";
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
 import cloudinary from "../lib/cloudinary.js";
+import {ObjectId} from "mongodb";
+
+import { io, getSocketId } from "../lib/socket.js";
 
 export const getUsersForUser = async (req, res) => {
   try {
@@ -17,15 +20,16 @@ export const getUsersForUser = async (req, res) => {
 
 export const getMessages = async (req, res) => {
   try {
-    const { id: userToChatID } = req.params.id;
+    const userToChatID  = req.params.id;
     const senderID = req.user._id;
 
     const messages = await Message.find({
       $or: [
-        { senderId: senderID, recieverId: userToChatID },
-        { senderId: userToChatID, recieverId: senderID },
+        { senderId: senderID, receiverId: userToChatID },
+        { senderId: userToChatID, receiverId: senderID }
       ],
     });
+
 
     res.status(200).json(messages);
 
@@ -58,7 +62,10 @@ export const sendMessage = async (req, res) => {
     });
 
     await newMessage.save();
-    // TODO: Send message to the receiver using socket.io
+    
+    const receiverSocketId = getSocketId(receiverId);
+
+    if (receiverSocketId) { io.to(receiverSocketId).emit("newMessage", newMessage); } 
 
     res.status(201).json(newMessage);
   } catch (error) {
