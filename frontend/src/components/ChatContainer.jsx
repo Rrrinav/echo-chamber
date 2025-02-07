@@ -49,7 +49,7 @@ const ChatContainer = () => {
               <time className='text-xs opacity-50 ml-1'>{ new Date(message.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, }) }</time>
             </div>
 
-            <div className='chat-bubble flex'>
+            <div className='chat-bubble flex flex-col'>
               {message.image && (
                 <img
                   src={message.image}
