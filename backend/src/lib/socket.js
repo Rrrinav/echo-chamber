@@ -12,11 +12,22 @@ const io = new Server(server, {
   }
 })
 
+// { userId: socketId }
+const userSockMap = {}; 
+
 io.on("connection", (socket) => {
   console.log("User connected: ", socket.id);
 
+  const userId = socket.handshake.query.userId;
+
+  if (userId) userSockMap[userId] = socket.id; 
+
+  // .emit is for sending to all users
+  io.emit("getOnlineUsers", Object.keys(userSockMap));
+
   socket.on("disconnect", () => {
     console.log("User disconnected: ", socket.id);
+    delete userSockMap[userId];
   })
 })
 
